@@ -102,12 +102,15 @@ def draw_pieces(board):
                 color = colors[value]
             else:
                 color = colors['other']
+            # draw 4 * 4 blocks, each blocks is 75 * 75, gap is 20
             pygame.draw.rect(screen, color, [j * 95 + 20, i * 95 + 20, 75, 75], 0, 5)
             if value > 0:
                 value_len = len(str(value))
                 font = pygame.font.Font('freesansbold.ttf', 48-(5*value_len))
+                # draw a new image
                 value_text = font.render(str(value), True, value_color)
                 text_rect = value_text.get_rect(center = (j * 95 + 57, i * 95 + 57))
+                # draw one image onto another
                 screen.blit(value_text, text_rect)
                 pygame.draw.rect(screen, 'black', [j * 95 + 20, i * 95 + 20, 75, 75], 2, 5)
                 
