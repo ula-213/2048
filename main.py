@@ -31,8 +31,58 @@ colors = {
     'bg' : (187, 173, 160 )
     }
 
+# spawn in new pieces randomly when turns start
+def new_pieces(board):
+    count = 0
+    full = False
+    while any(0 in row for row in board) and count < 1:
+        row = random.randint(0, 3)
+        col = random.randint(0, 3)
+        if board[row][col] == 0:
+            count += 1
+            if random.randint(1, 10) == 10:
+                board[row][col] = 4
+            else:
+                board[row][col] = 2
+    if count < 1:
+        full = True
+    return board, full
+
 # game variables initialize
-board_values = [[8 for _ in range(4)] for _ in range(4)]
+board_values = [[0 for _ in range(4)] for _ in range(4)]
+game_over = False
+spawn_new = True
+init_count = 0
+direction = ''
+
+# take your turn based on direction
+def take_turn(direc, board):
+    merged = [[False for _ in range(4)] for _ in range(4)]
+    if direc == 'UP':
+        for i in range(4):
+            for j in range(4):
+                shift = 0
+                if i > 0:
+                    for q in range(i):
+                        if board[q][j] == 0:
+                            shift += 1
+                    if shift > 0:
+                        board[i-shift][j] = board[i][j]
+                        board[i][j] = 0
+                    if board[i-shift-1][j] == board[i-shift][j] and not merged[i-shift][j] \
+                            and not merged[i-shift-1][j]:
+                        board[i-shift-1][j] *= 2
+                        board[i-shift][j] = 0
+                        merged[i-shift-1][j] = True
+                         
+    elif direc == 'DOWN':
+        pass
+    elif direc == 'LEFT':
+        pass
+    elif direc == 'RIGHT':
+        pass
+
+    return board
 
 # draw background for the board
 def draw_board():
@@ -61,17 +111,34 @@ def draw_pieces(board):
                 screen.blit(value_text, text_rect)
                 pygame.draw.rect(screen, 'black', [j * 95 + 20, i * 95 + 20, 75, 75], 2, 5)
                 
-#main game loop
+# main game loop
 run = True
 while run:
     timer.tick(fps)
     screen.fill('gray')
     draw_board()
     draw_pieces(board_values)
+    if spawn_new or init_count < 2:
+        board_values, game_over = new_pieces(board_values)
+        spawn_new = False
+        init_count += 1
+    if direction != '':
+        board_values = take_turn(direction, board_values)
+        direction = ''
+        spawn_new = True
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-            
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_UP:
+                direction = 'UP'
+            elif event.key == pygame.K_DOWN:
+                direction = 'DOWN'
+            elif event.key == pygame.K_LEFT:
+                direction = 'LEFT'
+            elif event.key == pygame.K_RIGHT:
+                direction = 'RIGHT'
+                
     pygame.display.flip()
 pygame.quit()
