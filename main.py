@@ -133,6 +133,7 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+        # detect if the keyboard is pressed or not
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_UP:
                 direction = 'UP'
